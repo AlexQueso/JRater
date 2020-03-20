@@ -4,8 +4,8 @@ public class Rater {
 
     public static void main(String [] args){
         String[] args1 = {"rater.java", "-p",
-                "C:\\Users\\aquem\\IdeaProjects\\rater\\src\\main\\java\\projects\\reference",
-                "C:\\Users\\aquem\\IdeaProjects\\rater\\src\\main\\java\\projects\\students"};
+                "C:\\Users\\aquem\\Desktop\\projects\\reference",
+                "C:\\Users\\aquem\\Desktop\\projects\\students"};
         args = args1;
         if (args.length < 4)
             System.err.println("Número de argumentos erroneo: " + args.length);
