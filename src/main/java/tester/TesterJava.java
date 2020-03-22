@@ -1,7 +1,5 @@
 package tester;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import java.io.File;
 
 public class TesterJava implements Tester{
@@ -14,6 +12,6 @@ public class TesterJava implements Tester{
 
     @Override
     public String test(String buildTrace) {
-        throw new NotImplementedException();
+        throw new RuntimeException("not implemented yet");
     }
 }

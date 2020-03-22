@@ -1,8 +1,7 @@
 import compiler.Compiler;
-import compiler.CompilerJava;
+import compiler.CompilerAntJava;
 import org.apache.commons.io.FileUtils;
 import reports.BuildTestReportGenerator;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import tester.Tester;
 import tester.TesterJava;
 
@@ -17,14 +16,14 @@ public class Script {
     public static final String STUDENTS_PROJECTS = "students";
 
     public static void rateDirectory(File referenceProject, File studentProject){
-        throw new NotImplementedException();
+        throw new RuntimeException("not implemented yet");
     }
 
     public static void rateProject(File referenceProject, File studentProject){
         File tempDir = createTemporalDir(referenceProject);
         fillTemporalProject(tempDir, referenceProject, studentProject);
 
-        Compiler compiler = new CompilerJava(tempDir);
+        Compiler compiler = new CompilerAntJava(tempDir);
         String buildTrace = compiler.build();
 
         Tester tester = new TesterJava(tempDir);
