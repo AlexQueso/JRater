@@ -16,7 +16,7 @@ public class CompilerAntJava implements Compiler {
     @Override
     public String build() {
         ProcessBuilder processBuilder = new ProcessBuilder();
-        processBuilder.command("bash", "-c", "ant -f " + temporalDir.toString() + "/build.xml" + " | grep \"BUILD\"");
+        processBuilder.command("bash", "-c", "ant -f " + temporalDir.toString() + "/build.xml compile | grep \"BUILD\"");
         StringBuilder output = new StringBuilder();
         try {
             Process process = processBuilder.start();

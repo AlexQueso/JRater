@@ -7,16 +7,17 @@ import java.io.InputStreamReader;
 
 public class TesterAntJava implements Tester{
 
-    private File projectDir;
+    private File temporalDir;
 
     public TesterAntJava(File projectDir) {
-        this.projectDir = projectDir;
+        this.temporalDir = projectDir;
     }
 
     @Override
     public String test(String buildTrace) {
         ProcessBuilder processBuilder = new ProcessBuilder();
-        processBuilder.command("bash", "-c", "ant test | grep -E \"Testsuite|Tests run:|Testcase|\\[junit\\] java.|\\[junit\\] junit.|at \"");
+        processBuilder.command("bash", "-c", "ant -f " + temporalDir.toString() + "/build.xml test | grep -E " +
+                "\"Testsuite|Testcase|Tests run|\\[junit\\] java.|\\[junit\\] junit.|at |org.junit does not exist\"");
         StringBuilder output = new StringBuilder();
         try{
             Process process = processBuilder.start();
