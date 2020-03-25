@@ -3,7 +3,7 @@ import compiler.CompilerAntJava;
 import org.apache.commons.io.FileUtils;
 import reports.BuildTestReportGenerator;
 import tester.Tester;
-import tester.TesterJava;
+import tester.TesterAntJava;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +26,7 @@ public class Script {
         Compiler compiler = new CompilerAntJava(tempDir);
         String buildTrace = compiler.build();
 
-        Tester tester = new TesterJava(tempDir);
+        Tester tester = new TesterAntJava(tempDir);
         String testTrace = tester.test(buildTrace);
 
         BuildTestReportGenerator.generate(buildTrace, testTrace);
