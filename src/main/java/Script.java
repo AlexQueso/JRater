@@ -1,6 +1,7 @@
 import compiler.Compiler;
 import compiler.CompilerAntJava;
 import org.apache.commons.io.FileUtils;
+import org.json.simple.JSONObject;
 import reports.BuildTestReportGenerator;
 import tester.Tester;
 import tester.TesterAntJava;
@@ -28,8 +29,9 @@ public class Script {
 
         Tester tester = new TesterAntJava(tempDir);
         String testTrace = tester.test(buildTrace);
-
-        BuildTestReportGenerator.generate(buildTrace, testTrace);
+        //String testTrace = testTraceExample();
+        JSONObject json = BuildTestReportGenerator.generate(buildTrace, testTrace);
+        saveJSONInStudentDir(json);
     }
 
     public static void antiplag(File studentProjects, File configFile) {
@@ -90,5 +92,38 @@ public class Script {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void saveJSONInStudentDir(JSONObject json){
+
+    }
+
+    private static String testTraceExample (){
+        return "    [junit] Testsuite: material.maps.HashTableMapLPTest\n" +
+                "    [junit] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.086 sec\n" +
+                "    [junit] Testcase: testBucketSize(material.maps.HashTableMapLPTest):\tFAILED\n" +
+                "    [junit] junit.framework.AssertionFailedError\n" +
+                "    [junit] \tat material.maps.HashTableMapLPTest.testBucketSize(HashTableMapLPTest.java:37)\n" +
+                "    [junit] \tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n" +
+                "    [junit] \tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)\n" +
+                "    [junit] \tat java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n" +
+                "    [junit] Testsuite: practica2.CollisionAnalyzerTest\n" +
+                "    [junit] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 13.931 sec\n" +
+                "    [junit] Testsuite: practica2.NewsAnalyzerTest\n" +
+                "    [junit] Tests run: 2, Failures: 0, Errors: 2, Skipped: 0, Time elapsed: 0.909 sec\n" +
+                "    [junit] Testcase: testGetNewsWith(practica2.NewsAnalyzerTest):\tCaused an ERROR\n" +
+                "    [junit] java.lang.RuntimeException: Not implemented yet\n" +
+                "    [junit] \tat practica2.NewsAnalyzer.getNewsWith(NewsAnalyzer.java:35)\n" +
+                "    [junit] \tat practica2.NewsAnalyzerTest.testGetNewsWith(NewsAnalyzerTest.java:29)\n" +
+                "    [junit] \tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n" +
+                "    [junit] \tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)\n" +
+                "    [junit] \tat java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n" +
+                "    [junit] Testcase: testMoreFrecuentNamedEntity(practica2.NewsAnalyzerTest):\tCaused an ERROR\n" +
+                "    [junit] java.lang.RuntimeException: Not implemented yet\n" +
+                "    [junit] \tat practica2.NewsAnalyzer.moreFrecuentNamedEntity(NewsAnalyzer.java:43)\n" +
+                "    [junit] \tat practica2.NewsAnalyzerTest.testMoreFrecuentNamedEntity(NewsAnalyzerTest.java:41)\n" +
+                "    [junit] \tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n" +
+                "    [junit] \tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)\n" +
+                "    [junit] \tat java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n";
     }
 }

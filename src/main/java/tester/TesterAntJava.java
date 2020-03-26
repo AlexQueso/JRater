@@ -34,6 +34,9 @@ public class TesterAntJava implements Tester{
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
-        return output.toString();
+        String s = output.toString();
+        if (s.contains("org.junit does not exist"))
+            throw new RuntimeException("Failure during testing phase, junit dependencies weren't found");
+        return s;
     }
 }
