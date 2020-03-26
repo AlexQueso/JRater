@@ -6,6 +6,7 @@ import org.json.simple.JSONObject;
 public class BuildTestReportGenerator {
 
     public static JSONObject generate(String buildTrace, String testTrace) {
+        System.out.println("Generating JSON report ...");
         JSONObject json = new JSONObject();
 
         if (buildTrace.contains("FAILED")) {
@@ -75,7 +76,7 @@ public class BuildTestReportGenerator {
                         StringBuilder trace = new StringBuilder();
                         while (!lines[i].contains("Testsuite") && !lines[i].contains("Testcase")) {
                             line = lines[i];
-                            trace.append(line);
+                            trace.append(line + "\n");
                             i++;
                             if (i >= linesLength)
                                 break;

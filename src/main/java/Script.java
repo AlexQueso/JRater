@@ -7,6 +7,7 @@ import tester.Tester;
 import tester.TesterAntJava;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Objects;
 
@@ -31,7 +32,8 @@ public class Script {
         String testTrace = tester.test(buildTrace);
         //String testTrace = testTraceExample();
         JSONObject json = BuildTestReportGenerator.generate(buildTrace, testTrace);
-        saveJSONInStudentDir(json);
+        saveJSONInStudentDir(json, studentProject.getPath());
+        System.out.println(json);
     }
 
     public static void antiplag(File studentProjects, File configFile) {
@@ -94,8 +96,13 @@ public class Script {
         }
     }
 
-    private static void saveJSONInStudentDir(JSONObject json){
-
+    private static void saveJSONInStudentDir(JSONObject json, String studentDirPath){
+        try (FileWriter file = new FileWriter(studentDirPath + "/build_test_report.json")) {
+            file.write(json.toJSONString());
+            System.out.println("JSON file saved in: " + studentDirPath + "/build_test_report.json");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static String testTraceExample (){
