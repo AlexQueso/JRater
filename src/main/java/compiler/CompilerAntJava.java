@@ -24,9 +24,9 @@ public class CompilerAntJava implements Compiler {
 
             BufferedReader reader = new BufferedReader(
                     new InputStreamReader(process.getInputStream()));
-            String line = "";
+            String line;
             while ((line = reader.readLine()) != null) {
-                output.append(line + "\n");
+                output.append(line).append("\n");
             }
             int exitVal = process.waitFor();
             if (exitVal != 0)

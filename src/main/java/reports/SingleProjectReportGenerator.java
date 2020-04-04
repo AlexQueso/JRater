@@ -3,19 +3,23 @@ package reports;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-public class BuildTestReportGenerator {
+import java.util.Calendar;
 
-    public static JSONObject generate(String buildTrace, String testTrace) {
+public class SingleProjectReportGenerator {
+
+    public static JSONObject generate(String buildTrace, String testTrace, String studentName, String practiceName) {
         System.out.println("Generating JSON report ...");
         JSONObject json = new JSONObject();
 
-        if (buildTrace.contains("FAILED")) {
-            json.put("build", buildTrace);
+        json.put("studentName", studentName);
+        json.put("practicaName", practiceName);
+        json.put("date", getDateAndTime());
+        json.put("build", buildTrace);
+        if (buildTrace.contains("FAILED"))
             json.put("test", "No se han ejecutado los tests");
-        } else {
-            json.put("build", buildTrace);
+        else
             json.put("test", addTestToJSON(testTrace));
-        }
+
         return json;
     }
 
@@ -76,7 +80,7 @@ public class BuildTestReportGenerator {
                         StringBuilder trace = new StringBuilder();
                         while (!lines[i].contains("Testsuite") && !lines[i].contains("Testcase")) {
                             line = lines[i];
-                            trace.append(line + "\n");
+                            trace.append(line).append("\n");
                             i++;
                             if (i >= linesLength)
                                 break;
@@ -94,27 +98,18 @@ public class BuildTestReportGenerator {
         }
         return testList;
     }
+
+    private static String getDateAndTime(){
+        Calendar now = Calendar.getInstance();
+        String date = "";
+
+        date += now.get(Calendar.DAY_OF_MONTH) + "/";
+        date += now.get(Calendar.MONTH) + "/";
+        date += now.get(Calendar.YEAR) + " - ";
+        date += now.get(Calendar.HOUR_OF_DAY) + ":";
+        date += now.get(Calendar.MINUTE) + ":";
+        date += now.get(Calendar.SECOND);
+
+        return date;
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
