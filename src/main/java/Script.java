@@ -8,14 +8,15 @@ import tester.Tester;
 import tester.TesterAntJava;
 
 import java.io.*;
+import java.util.LinkedList;
 import java.util.Objects;
 import java.util.concurrent.*;
 
 public class Script {
 
     public static final String TEMPORAL_PROJECT = "temporal_project";
-    public static final String REFERENCE_PROJECT = "reference";
-    public static final String STUDENTS_PROJECTS = "students";
+
+    private static final Object globalReportLock = new Object();
 
     /**
      * Compiles, builds and test all the projects located in a specific directory and generates json reports for any of
@@ -26,13 +27,14 @@ public class Script {
         final File[] studentProjectList = studentProjects.listFiles();
         if (studentProjectList != null){
             int nProjects = studentProjectList.length;
+            LinkedList<JSONObject> reportList = new LinkedList<>();
             ExecutorService executor = Executors.newFixedThreadPool(10);
             CompletionService<String> completionService = new ExecutorCompletionService<>(executor);
 
             for(int i=0; i<nProjects; i++){
                 final int finalI = i;
                 Callable<String> callable = () -> rateProject(referenceProject, studentProjectList[finalI],
-                        true, practiceName);
+                        true, practiceName, reportList);
                 completionService.submit(callable);
             }
 
@@ -44,10 +46,13 @@ public class Script {
                     System.out.println(e.getMessage());
                 }
             }
+            shutDownExecutorService(executor);
 
-            //informe global
-            GlobalReportGenerator globalReportGenerator; //...
-            System.out.println("complete!");
+            JSONObject globalReport = GlobalReportGenerator.generate(reportList);
+            saveJSONInDir(globalReport, referenceProject.getPath(), "global_report");
+            System.out.println("Global report JSON saved in " + referenceProject.getPath() + "/global_report.json");
+
+            System.out.println("\n---- RATING COMPLETE ----");
         }
     }
 
@@ -55,31 +60,48 @@ public class Script {
      * Compiles, builds and test a project made of a reference project and the src code from a student
      * and generates a json report.
      */
-    public static String rateProject(File referenceProject, File studentProject, boolean studentNameRelevant, String practiceName){
-        System.out.println("Rating student project: " + studentProject.getName() + " ...");
+    public static String rateProject(File referenceProject, File studentProject, boolean studentNameRelevant,
+                                     String practiceName, LinkedList<JSONObject> reportList){
         if (studentProject.toString().contains(".zip"))
             studentProject = unzip(studentProject, studentProject.getParentFile());
 
-        String studentName = null;
-        if (studentNameRelevant)
+        String studentName = "";
+        if (studentNameRelevant) {
             studentName = getStudentNameFromDirName(studentProject);
+            System.out.println("Rating student project: " + studentName + " ...");
+        } else {
+            System.out.println("Rating student project: " + studentProject.getName() + " ...");
+        }
 
         File tempDir = createTemporalDir(studentProject);
         fillTemporalProject(tempDir, referenceProject, studentProject);
 
         Compiler compiler = new CompilerAntJava(tempDir);
+        System.out.println(studentName + ": Building project...");
         String buildTrace = compiler.build();
 
-        Tester tester = new TesterAntJava(tempDir);
-        String testTrace = tester.test(buildTrace);
+        String testTrace = null;
+        if (!buildTrace.contains("FAILED")){
+            Tester tester = new TesterAntJava(tempDir);
+            System.out.println(studentName + ": Executing tests...");
+            testTrace = tester.test(buildTrace);
+        } else {
+            System.out.println(studentName + ": Test skipped (build failure)");
+        }
+
         //String testTrace = testTraceExample();
         JSONObject json = SingleProjectReportGenerator.generate(buildTrace, testTrace, studentName, practiceName);
-        saveJSONInStudentDir(json, studentProject.getPath());
-        //System.out.println(json);
+        saveJSONInDir(json, studentProject.getPath(), "build_test_report");
+        System.out.println(studentName + ": JSON file saved in: " + studentProject + "/build_test_report.json");
 
-        //deleteTemporalProject(tempDir);
+        synchronized (globalReportLock) {
+            if (reportList != null)
+                reportList.add(json);
+        }
 
-        return studentProject.getName();
+        deleteDirectory(tempDir);
+
+        return studentName;
     }
 
     /**
@@ -149,10 +171,9 @@ public class Script {
     /**
      * Saves a JSONObject instance in the Student project directory
      */
-    private static void saveJSONInStudentDir(JSONObject json, String studentDirPath){
-        try (FileWriter file = new FileWriter(studentDirPath + "/build_test_report.json")) {
+    private static void saveJSONInDir(JSONObject json, String studentDirPath, String fileName){
+        try (FileWriter file = new FileWriter(studentDirPath + "/" + fileName +".json")) {
             file.write(json.toJSONString());
-            System.out.println("JSON file saved in: " + studentDirPath + "/build_test_report.json");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -244,4 +265,24 @@ public class Script {
         return true;
     }
 
+    private static void shutDownExecutorService(ExecutorService executor){
+        try {
+            executor.shutdown();
+            boolean success = false;
+            success = executor.awaitTermination(3, TimeUnit.SECONDS);
+            if (!success)
+                executor.shutdownNow();
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void deleteDirectory(File directory){
+        try {
+            FileUtils.deleteDirectory(directory);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

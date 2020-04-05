@@ -16,13 +16,13 @@ public class Rater {
 //            String arg = "-p";
             switch (arg){
                 case "-d":
-                    System.out.println("Rating directory of projects: " + projectDir.getPath());
+                    System.out.println("Rating directory of projects: " + projectDir.getPath() + "\n");
                     Script.rateDirectory(referenceDir, projectDir, practiceName);
                     break;
 
                 case "-p":
-                    System.out.println("-p: Un solo proyecto");
-                    Script.rateProject(referenceDir, projectDir, false, practiceName);
+                    System.out.println("Rating project " + projectDir.getPath() + "\n");
+                    Script.rateProject(referenceDir, projectDir, false, practiceName, null);
                     break;
 
                 case "-a":

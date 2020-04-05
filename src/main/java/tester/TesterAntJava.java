@@ -15,9 +15,8 @@ public class TesterAntJava implements Tester{
 
     @Override
     public String test(String buildTrace) {
-        System.out.println("Executing tests ...");
         ProcessBuilder processBuilder = new ProcessBuilder();
-        processBuilder.command("bash", "-c", "timeout 20 ant -f " + temporalDir.toString() + "/build.xml test | grep -E " +
+        processBuilder.command("bash", "-c", " ant -f " + temporalDir.toString() + "/build.xml test | grep -E " +
                 "\"Testsuite|Testcase|Tests run|\\[junit\\] java.|\\[junit\\] junit.|at |org.junit does not exist\"");
         StringBuilder output = new StringBuilder();
         try{

@@ -8,11 +8,10 @@ import java.util.Calendar;
 public class SingleProjectReportGenerator {
 
     public static JSONObject generate(String buildTrace, String testTrace, String studentName, String practiceName) {
-        System.out.println("Generating JSON report ...");
         JSONObject json = new JSONObject();
 
         json.put("studentName", studentName);
-        json.put("practicaName", practiceName);
+        json.put("projectName", practiceName);
         json.put("date", getDateAndTime());
         json.put("build", buildTrace);
         if (buildTrace.contains("FAILED"))
@@ -35,7 +34,7 @@ public class SingleProjectReportGenerator {
             // "testsuite":"material.maps.HashTableMapLPTes"
             String line = lines[i];
             line = line.replace("Testsuite: ", "");
-            testSuite.put("testsuite", line);
+            testSuite.put("testSuite", line);
             i++;
 
             // "correct":0, "total":1
@@ -60,7 +59,7 @@ public class SingleProjectReportGenerator {
             if (i < linesLength) {
                 //"testcases" : ...
                 if (lines[i].contains("Testsuite"))
-                    testSuite.put("testcases", null);
+                    testSuite.put("testCases", null);
                 else {
                     JSONArray testcases = new JSONArray();
 
@@ -73,7 +72,7 @@ public class SingleProjectReportGenerator {
                         int tabAppearenceIndex = line.indexOf("\t");
                         line = line.substring(tabAppearenceIndex + 1);
 
-                        testcase.put("testname", testName);
+                        testcase.put("testName", testName);
                         testcase.put("cause", line);
 
                         i++;
@@ -91,7 +90,7 @@ public class SingleProjectReportGenerator {
                         if (i >= linesLength)
                             break;
                     }
-                    testSuite.put("testcases", testcases);
+                    testSuite.put("testCases", testcases);
                 }
             }
             testList.add(testSuite);
@@ -99,12 +98,12 @@ public class SingleProjectReportGenerator {
         return testList;
     }
 
-    private static String getDateAndTime(){
+    public static String getDateAndTime(){
         Calendar now = Calendar.getInstance();
         String date = "";
 
         date += now.get(Calendar.DAY_OF_MONTH) + "/";
-        date += now.get(Calendar.MONTH) + "/";
+        date += (now.get(Calendar.MONTH) + 1) + "/";
         date += now.get(Calendar.YEAR) + " - ";
         date += now.get(Calendar.HOUR_OF_DAY) + ":";
         date += now.get(Calendar.MINUTE) + ":";
