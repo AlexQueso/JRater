@@ -6,6 +6,8 @@ import reports.GlobalReportGenerator;
 import reports.SingleProjectReportGenerator;
 import tester.Tester;
 import tester.TesterAntJava;
+import unplager.Unplager;
+import unplager.UnplagerJplag;
 
 import java.io.*;
 import java.util.LinkedList;
@@ -49,10 +51,12 @@ public class Script {
             shutDownExecutorService(executor);
 
             JSONObject globalReport = GlobalReportGenerator.generate(reportList);
-            saveJSONInDir(globalReport, referenceProject.getPath(), "global_report");
-            System.out.println("Global report JSON saved in " + referenceProject.getPath() + "/global_report.json");
+            saveJSONInDir(globalReport, referenceProject.getParent(), "global_report");
+            System.out.println("\nGlobal report JSON saved in " + referenceProject.getParent() + "/global_report.json\n");
 
-            System.out.println("\n---- RATING COMPLETE ----");
+            antiplag(studentProjects, referenceProject);
+
+            System.out.println("---- RATING COMPLETE ----");
         }
     }
 
@@ -107,7 +111,11 @@ public class Script {
     /**
      * Using JPlag, checks the similarities of the projects located in a specific directory
      */
-    public static void antiplag(File studentProjects, File configFile) {
+    public static void antiplag(File studentProjects, File referenceProject) {
+        System.out.println("Checking plagiarism at " + studentProjects.getPath());
+
+        Unplager unplager = new UnplagerJplag();
+        System.out.println(unplager.detect(studentProjects, referenceProject.getParentFile()));
     }
 
     /**
@@ -215,42 +223,13 @@ public class Script {
         name = dirName.substring(0, aux) + " ";
         dirName = dirName.substring(aux+1);
         aux = dirName.indexOf("_");
-        name += dirName.substring(0, aux) + " ";
+        name += dirName.substring(0, aux);
         dirName = dirName.substring(aux+1);
         aux = dirName.indexOf("_");
-        if (!dirName.substring(0, aux).contains("assignsubmission") || !isNumeric(dirName.substring(0, 1)))
-            name += dirName.substring(0, aux);
+        if (!dirName.substring(0, aux).contains("assignsubmission") && !isNumeric(dirName.substring(0, 1)))
+            name += " " + dirName.substring(0, aux);
 
         return name;
-    }
-
-    private static String testTraceExample (){
-        return "    [junit] Testsuite: material.maps.HashTableMapLPTest\n" +
-                "    [junit] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.086 sec\n" +
-                "    [junit] Testcase: testBucketSize(material.maps.HashTableMapLPTest):\tFAILED\n" +
-                "    [junit] junit.framework.AssertionFailedError\n" +
-                "    [junit] \tat material.maps.HashTableMapLPTest.testBucketSize(HashTableMapLPTest.java:37)\n" +
-                "    [junit] \tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n" +
-                "    [junit] \tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)\n" +
-                "    [junit] \tat java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n" +
-                "    [junit] Testsuite: practica2.CollisionAnalyzerTest\n" +
-                "    [junit] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 13.931 sec\n" +
-                "    [junit] Testsuite: practica2.NewsAnalyzerTest\n" +
-                "    [junit] Tests run: 2, Failures: 0, Errors: 2, Skipped: 0, Time elapsed: 0.909 sec\n" +
-                "    [junit] Testcase: testGetNewsWith(practica2.NewsAnalyzerTest):\tCaused an ERROR\n" +
-                "    [junit] java.lang.RuntimeException: Not implemented yet\n" +
-                "    [junit] \tat practica2.NewsAnalyzer.getNewsWith(NewsAnalyzer.java:35)\n" +
-                "    [junit] \tat practica2.NewsAnalyzerTest.testGetNewsWith(NewsAnalyzerTest.java:29)\n" +
-                "    [junit] \tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n" +
-                "    [junit] \tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)\n" +
-                "    [junit] \tat java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n" +
-                "    [junit] Testcase: testMoreFrecuentNamedEntity(practica2.NewsAnalyzerTest):\tCaused an ERROR\n" +
-                "    [junit] java.lang.RuntimeException: Not implemented yet\n" +
-                "    [junit] \tat practica2.NewsAnalyzer.moreFrecuentNamedEntity(NewsAnalyzer.java:43)\n" +
-                "    [junit] \tat practica2.NewsAnalyzerTest.testMoreFrecuentNamedEntity(NewsAnalyzerTest.java:41)\n" +
-                "    [junit] \tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n" +
-                "    [junit] \tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)\n" +
-                "    [junit] \tat java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n";
     }
 
     private static boolean isNumeric(String strNum) {

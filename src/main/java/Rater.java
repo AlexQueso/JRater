@@ -10,10 +10,6 @@ public class Rater {
             File projectDir = new File(args[2]);
             String practiceName = args[3];
             String arg = args[0];
-//            File referenceDir = new File("/home/alex/Desktop/projects/reference");
-//            File projectDir = new File("/home/alex/Desktop/projects/students/ADRIAN_PEREZ_FERNANDEZ_27394347_assignsubmission_file_");
-//            String practiceName = "Práctica_prueba";
-//            String arg = "-p";
             switch (arg){
                 case "-d":
                     System.out.println("Rating directory of projects: " + projectDir.getPath() + "\n");
@@ -27,7 +23,7 @@ public class Rater {
 
                 case "-a":
                     System.out.println("-a: Anticopia de un directorio de proyectos");
-                    Script.antiplag(new File(args[2]), new File(args[3]));
+                    Script.antiplag(projectDir, referenceDir);
                     break;
             }
         }
