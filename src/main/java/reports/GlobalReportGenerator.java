@@ -3,7 +3,6 @@ package reports;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 
 public class GlobalReportGenerator {

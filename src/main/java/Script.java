@@ -192,25 +192,27 @@ public class Script {
         String unzippedFileName = zipFile.getName().replace(".zip", "");
         ProcessBuilder processBuilder = new ProcessBuilder();
         processBuilder.command("bash", "-c", "unzip " + zipFile.getAbsolutePath() + " -d " +
-                destination.getAbsolutePath());
+                destination.getAbsolutePath() + "/" + unzippedFileName);
         try {
             Process process = processBuilder.start();
             int exitVal = process.waitFor();
             if (exitVal != 0)
-                throw new RuntimeException("Build failure");
+                throw new RuntimeException("Failure unzipping: " + zipFile.getName());
 
             File[] files = destination.listFiles();
             if (files != null){
                 for (File f: files){
-                    if (f.getName().equals(unzippedFileName)){
-                        unzippedFile = f;
-                        break;
+                    if (f.getName().equals(unzippedFileName)) {
+                        for (File file : f.listFiles()){
+                            unzippedFile = f;
+                            break;
+                        }
                     }
                 }
             }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
-            System.err.println("Failure while unzipping: " + zipFile.getName());
+            System.err.println("Failure unzipping: " + zipFile.getName());
         }
         return unzippedFile;
     }
