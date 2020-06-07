@@ -6,18 +6,22 @@ public class Rater {
         if (args.length < 4)
             System.err.println("Número de argumentos erroneo: " + args.length);
         else{
+            String arg = args[0];
             File referenceDir = new File(args[1]);
-//            File referenceDir = new File("/home/alex/Desktop/projects/references/practica_1");
             File projectDir = new File(args[2]);
-//            File projectDir = new File("/home/alex/Desktop/projects/students/1429795573_81531027008916.zip");
             String practiceName = args[3];
 //            String practiceName = "Practica_1";
-            String arg = args[0];
-//            String arg = "-p";
+//            File referenceDir = new File("/home/alex/Desktop/prueba/practica_1");
+//            File projectDir = new File("/home/alex/Desktop/prueba/students.zip");
+//            String arg = "-d";
+            String pathToJplag = "";
+            if(args.length == 5){
+               pathToJplag = args[4];
+            }
             switch (arg){
                 case "-d":
                     System.out.println("Rating directory of projects: " + projectDir.getPath() + "\n");
-                    Script.rateDirectory(referenceDir, projectDir, practiceName);
+                    Script.rateDirectory(referenceDir, projectDir, practiceName, pathToJplag);
                     break;
 
                 case "-p":
@@ -27,7 +31,7 @@ public class Rater {
 
                 case "-a":
                     System.out.println("-a: Anticopia de un directorio de proyectos");
-                    Script.antiplag(projectDir, referenceDir);
+                    Script.antiplag(projectDir, referenceDir, pathToJplag);
                     break;
             }
         }

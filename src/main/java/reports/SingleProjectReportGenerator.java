@@ -16,9 +16,12 @@ public class SingleProjectReportGenerator {
         json.put("build", buildTrace);
         if (buildTrace.contains("FAILED"))
             json.put("test", "No se han ejecutado los tests");
-        else
-            json.put("test", addTestToJSON(testTrace));
-
+        else{
+            if (testTrace.contains("Timeout exception"))
+                json.put("test", "No se han ejecutado los tests correctamente debido a una TimeoutException");
+            else
+                json.put("test", addTestToJSON(testTrace));
+        }
         return json;
     }
 

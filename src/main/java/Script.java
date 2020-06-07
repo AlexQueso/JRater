@@ -25,7 +25,11 @@ public class Script {
      * those projects.
      * Also generates a global report.
      */
-    public static void rateDirectory(final File referenceProject, File studentProjects, final String practiceName){
+    public static void rateDirectory(final File referenceProject, File studentProjects, final String practiceName, String pathToJPlag){
+        if (studentProjects.toString().contains(".zip")) {
+            studentProjects = unzip(studentProjects, studentProjects.getParentFile());
+            studentProjects = Objects.requireNonNull(studentProjects.listFiles())[0];
+        }
         final File[] studentProjectList = studentProjects.listFiles();
         if (studentProjectList != null){
             int nProjects = studentProjectList.length;
@@ -51,10 +55,10 @@ public class Script {
             shutDownExecutorService(executor);
 
             JSONObject globalReport = GlobalReportGenerator.generate(reportList);
-            saveJSONInDir(globalReport, referenceProject.getParent(), "global_report");
+            saveJSONInDir(globalReport, studentProjects.getParent(), "global_report");
             System.out.println("\nGlobal report JSON saved in " + referenceProject.getParent() + "/global_report.json\n");
 
-            antiplag(studentProjects, referenceProject);
+            antiplag(studentProjects, referenceProject, pathToJPlag);
 
             System.out.println("---- RATING COMPLETE ----");
         }
@@ -111,11 +115,16 @@ public class Script {
     /**
      * Using JPlag, checks the similarities of the projects located in a specific directory
      */
-    public static void antiplag(File studentProjects, File referenceProject) {
+    public static void antiplag(File studentProjects, File referenceProject, String pathToJplag) {
         System.out.println("Checking plagiarism at " + studentProjects.getPath());
 
+        if (studentProjects.toString().contains(".zip")) {
+            studentProjects = unzip(studentProjects, studentProjects.getParentFile());
+            studentProjects = Objects.requireNonNull(studentProjects.listFiles())[0];
+        }
+
         Unplager unplager = new UnplagerJplag();
-        System.out.println(unplager.detect(studentProjects, referenceProject.getParentFile()));
+        System.out.println(unplager.detect(studentProjects, studentProjects.getParentFile(), pathToJplag));
     }
 
     /**
@@ -162,7 +171,6 @@ public class Script {
                     }
                 }
             }
-
             if (studentProject.listFiles() != null){
                 for (File f: Objects.requireNonNull(studentProject.listFiles())){
                     if (f.getName().equals("src")){
@@ -219,18 +227,20 @@ public class Script {
 
     private static String getStudentNameFromDirName(File studentProject){
         String name;
-
-        String dirName = studentProject.getName();
-        int aux = dirName.indexOf("_");
-        name = dirName.substring(0, aux) + " ";
-        dirName = dirName.substring(aux+1);
-        aux = dirName.indexOf("_");
-        name += dirName.substring(0, aux);
-        dirName = dirName.substring(aux+1);
-        aux = dirName.indexOf("_");
-        if (!dirName.substring(0, aux).contains("assignsubmission") && !isNumeric(dirName.substring(0, 1)))
-            name += " " + dirName.substring(0, aux);
-
+        if (studentProject.getName().contains("assignsubmission")){
+            String dirName = studentProject.getName();
+            int aux = dirName.indexOf("_");
+            name = dirName.substring(0, aux) + " ";
+            dirName = dirName.substring(aux+1);
+            aux = dirName.indexOf("_");
+            name += dirName.substring(0, aux);
+            dirName = dirName.substring(aux+1);
+            aux = dirName.indexOf("_");
+            if (!dirName.substring(0, aux).contains("assignsubmission") && !isNumeric(dirName.substring(0, 1)))
+                name += " " + dirName.substring(0, aux);
+        } else {
+            name = studentProject.getName().replace("_", " ");
+        }
         return name;
     }
 
