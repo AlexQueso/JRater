@@ -16,8 +16,8 @@ public class TesterAntJava implements Tester{
     @Override
     public String test(String buildTrace) {
         ProcessBuilder processBuilder = new ProcessBuilder();
-        processBuilder.command("bash", "-c", " timeout 25 ant -f " + temporalDir.toString() + "/build.xml test | grep -E " +
-                "\"Testsuite|Testcase|Tests run|\\[junit\\] java.|\\[junit\\] junit.|at |org.junit does not exist|BUILD\"");
+        processBuilder.command("bash", "-c", " timeout 30 ant -f " + temporalDir.toString() + "/build.xml test | grep -E " +
+                "\"Testsuite|Testcase|Tests run|\\[junit\\] java.|\\[junit\\] junit.|at |org.junit does not exist|post-test-run:\"");
         StringBuilder output = new StringBuilder();
         try{
             Process process = processBuilder.start();
@@ -35,9 +35,11 @@ public class TesterAntJava implements Tester{
             e.printStackTrace();
         }
         String s = output.toString();
-        if (!s.contains("BUILD")){
+        if (!s.contains("post-test-run")){
             System.out.println(temporalDir.getName() + ": timeout exception durante la ejecucion de los tests");
             return "Timeout exception";
+        } else {
+            s = s.replace("-post-test-run:\n", "");
         }
         if (s.contains("org.junit does not exist"))
             throw new RuntimeException("Failure during testing phase, junit dependencies weren't found");

@@ -11,10 +11,10 @@ public class Rater {
             File projectDir = new File(args[2]);
             String practiceName = args[3];
 //            String practiceName = "Practica_1";
-//            File referenceDir = new File("/home/alex/Desktop/prueba/practica_1");
-//            File projectDir = new File("/home/alex/Desktop/prueba/students.zip");
-//            String arg = "-d";
-            String pathToJplag = "";
+//            File referenceDir = new File("/home/alex/Desktop/projects/references/1/Practica2_2019");
+//            File projectDir = new File("/home/alex/Desktop/projects/references/1/Practica2_2019");
+//            String arg = "-p";
+            String pathToJplag = "/home/alex/Desktop/projects/jplag.jar";
             if(args.length == 5){
                pathToJplag = args[4];
             }
